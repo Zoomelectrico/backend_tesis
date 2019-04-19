@@ -35,5 +35,5 @@ app.use((req, res, next) => {
 require("./config/passport"); // Passport Config
 app.use(passport.initialize());
 app.use(passport.session());
-app.use("/", routes);
+app.use("/api", routes);
 module.exports = app;

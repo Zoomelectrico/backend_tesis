@@ -2,15 +2,16 @@ const router = require("express").Router();
 const passport = require("passport");
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
+const electoralGroupController = require("../controllers/electoralGroupController");
 
-router.get("/", (req, res) => {
-  res.json({ msg: "hello" });
-});
-
-router.get("/user/:email", userController.getUserByEmail);
+router.get(
+  "/profile/:id",
+  passport.authenticate("jwt", { session: false }),
+  userController.getProfile
+);
 
 router.post(
-  "/userCreate",
+  "/register-user",
   userController.validateUser,
   userController.createUser,
   passport.authenticate("signin"),
@@ -19,12 +20,16 @@ router.post(
 
 router.post("/login", passport.authenticate("signin"), authController.login);
 
-router.get(
-  "/test",
+router.post(
+  "/create-electoral-group/:id",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    res.json({ success: true, user: req.user });
-  }
+  electoralGroupController.createElectoralGroup
+);
+
+router.get(
+  "/electoral-group/:id",
+  passport.authenticate("jwt", { session: false }),
+  electoralGroupController.getElectoralGroupByCreatorId
 );
 
 module.exports = router;

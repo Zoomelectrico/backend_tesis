@@ -27,8 +27,7 @@ const userSchema = new mongoose.Schema({
     required: "Por favor ingresa un Numero de Cedula"
   },
   carnet: {
-    type: String,
-    required: "Por favor ingresa un Numero de Carnet"
+    type: String
   },
   email: {
     type: String,
@@ -43,16 +42,20 @@ const userSchema = new mongoose.Schema({
     require: "Por favor ingrese un contrasena"
   },
   privilege: {
-    // 1 elector, 2 representante grupo electoral y 3 administrativo
+    // 1 elector, 2 representante grupo electoral, 3 administrativo, 4 SUPER ADMIN
     type: Number,
     default: 1
   },
+  electoralGroups: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "ElectoralGroup" }
+  ],
   resetPasswordToken: String,
   resetPasswordExpires: Date
 });
 
 userSchema.plugin(mongodbErrorHandler);
 userSchema.plugin(autoIncrement.plugin, { model: "User", field: "code" });
+
 userSchema.pre("save", async function(next) {
   if (!this.isModified("password")) {
     return next();
@@ -62,6 +65,7 @@ userSchema.pre("save", async function(next) {
   this.password = hash;
   next();
 });
+
 userSchema.methods.comparePassword = async function(password) {
   return await bcrypt.compare(password, this.password);
 };
